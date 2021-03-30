@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mechanicfinder/src/controller/auth.dart';
 import 'package:mechanicfinder/src/pages/service_detail.dart';
-import 'package:mechanicfinder/src/pages/settings.dart';
 import 'package:mechanicfinder/src/widgets/carousel_sliderdemo.dart';
 import 'package:mechanicfinder/src/widgets/const.dart';
 
 import 'login.dart';
+import 'settings.dart';
 
 final List<String> servicesname = [
   "Wheel Service",
@@ -222,15 +222,15 @@ class HomePageState extends State<HomePage> {
                       //     image: AssetImage('image/backgrouond.img'),
                       //     fit: BoxFit.cover),
                       ),
-                  // currentAccountPicture: CircleAvatar(
-                  //   backgroundImage: currentUser.photoURL != null
-                  //       ? NetworkImage(auth.user.currentUser.photoURL)
-                  //       : AssetImage('assets/serviceman.png'),
-                  // ),
-                  // accountName: auth.user.currentUser.displayName != null
-                  //     ? Text(auth.user.currentUser.displayName??'')
-                  //     : Text(''),
-                 // accountEmail: Text(auth.user.currentUser.email ?? ''),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundImage: currentUser.photoURL != null
+                        ? NetworkImage(auth.user.currentUser.photoURL)
+                        : AssetImage('assets/serviceman.png'),
+                  ),
+                  accountName: auth.user.currentUser.displayName != null
+                      ? Text(auth.user.currentUser.displayName)
+                      : Text(''),
+                  accountEmail: Text(auth.user.currentUser.email),
                 ),
                 drawerItem(
                     name: 'Request History', icon: Icons.menu_open_rounded),
@@ -330,8 +330,9 @@ class HomePageState extends State<HomePage> {
                   CarouselWithIndicatorDemo(),
                   PopularService(),
                   NewService(),
-                  SizedBox(height:20),
+                  SizedBox(height: 20),
                   Container(
+                      //margin: EdgeInsets.only(left: 30),
                       //padding: EdgeInsets.only(left: 30),
                       height: 170,
                       child: ListView.builder(
@@ -482,8 +483,7 @@ class NewService extends StatelessWidget {
                             onTap: () {
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (_) {
-                                return DetailPage(
-                                     servicesname[i],  imagesrc[i]);
+                                return DetailPage(servicesname[i], imagesrc[i]);
                               }));
                             },
                             child: Padding(
@@ -588,8 +588,7 @@ class PopularService extends StatelessWidget {
                             onTap: () {
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (_) {
-                                return DetailPage(
-                                    servicesname[i], imagesrc[i]);
+                                return DetailPage(servicesname[i], imagesrc[i]);
                               }));
                             },
                             child: Padding(

@@ -44,10 +44,12 @@ class Auth {
     }
   }
 
-  signin(String email, String password) async {
+  signin(String email, String pass) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+          .signInWithEmailAndPassword(
+              email: "barry.allen@example.com",
+              password: "SuperSecretPassword!");
       if (userCredential != null) return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

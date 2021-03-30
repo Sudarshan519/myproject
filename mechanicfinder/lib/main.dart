@@ -1,12 +1,13 @@
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mechanicfinder/src/controller/request_mechanic_firebase.dart';
+import 'package:get/get.dart';
+import 'package:mechanicfinder/src/controller/auth.dart';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:mechanicfinder/src/provider/my_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'src/controller/auth.dart';
+
 import 'src/pages/home.dart';
 import 'src/pages/login.dart';
 import 'src/pages/payment.dart';
@@ -15,7 +16,6 @@ import 'src/pages/set_vechicle.dart';
 import 'src/pages/settings.dart';
 import 'src/pages/sign_up.dart';
 import 'src/pages/track_request_page.dart';
-import 'src/pages/walletpage.dart';
 import 'src/pages/welcome_page.dart';
 
 Future<void> main() async {
@@ -37,7 +37,6 @@ class _MyAppState extends State<MyApp> {
   bool showlogin = false;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getlogin();
   }
@@ -65,7 +64,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => MyProvider()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'MechanicFinder',
         theme: ThemeData(
         //  primaryColor: themeColor,
@@ -83,10 +82,10 @@ class _MyAppState extends State<MyApp> {
           'signup': (_) => SignUp(),
           'requesthistory': (_) => ServiceHistoryPage(),
           'profile': (_) => SettingsPage(),
-          'wallet': (_) => MyWallet(),
+          //'wallet': (_) => MyWallet(),
           'invite_friends': (_) => InviteFriends(),
           'support': (_) => SupportPage(),
-        //  'requestservice': (_) => RequestServices(),
+          //'requestservice': (_) => RequestServicePage(),
           'trackrequest': (_) => TrackRequestpage(),
           'home': (_) => HomePage(
                 currentUser: auth.user.currentUser,
@@ -102,9 +101,7 @@ class _MyAppState extends State<MyApp> {
 class InviteFriends extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child:TextButton()
-    );
+    return Container();
   }
 }
 
@@ -114,3 +111,10 @@ class SupportPage extends StatelessWidget {
     return Container();
   }
 }
+
+// class RequestServicePage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container();
+//   }
+// }

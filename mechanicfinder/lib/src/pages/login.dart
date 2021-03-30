@@ -8,6 +8,7 @@ import 'package:mechanicfinder/src/widgets/text_field.dart';
 
 import 'home.dart';
 
+
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key, this.title}) : super(key: key);
 
@@ -193,12 +194,8 @@ class LoginScreenState extends State<LoginScreen> {
                               side: BorderSide(color: Colors.green)),
                           onPressed: () {
                             try {
-                              if (_formKey.currentState.validate())
-                                auth.signInWithGoogle();
-                              
-                              if(auth.user!=null)
-                              Get.to(HomePage());
-                                   
+                              auth.signInWithGoogle().whenComplete(() =>   Navigator.pushNamed(context, 'home'));
+                            
                             } catch (e) {
                               _scaffoldKey.currentState.showSnackBar(
                                   SnackBar(content: Text(e.message)));

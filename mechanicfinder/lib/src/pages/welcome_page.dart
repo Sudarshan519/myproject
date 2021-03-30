@@ -21,6 +21,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       body: Column(
         children: [
           Expanded(
@@ -53,17 +54,14 @@ class WelcomePage extends StatelessWidget {
                     textColor: Colors.white,
                     onpress: () {
                       Navigator.pushNamed(context, 'login');
-                     
                     }),
                 button(
                     name: 'SignUp',
                     color: Colors.white,
                     textColor: Colors.green,
-                    onpress: (){
-                       Navigator.pushNamed(context, 'signup');
-                    }
-                    
-                    ),
+                    onpress: () {
+                      Navigator.pushNamed(context, 'signup');
+                    }),
               ],
             ),
           ))
