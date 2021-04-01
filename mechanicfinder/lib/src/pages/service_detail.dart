@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:haversine/haversine.dart';
-import 'package:mechanicfinder/main.dart';
 import 'package:mechanicfinder/src/controller/mechanicList.dart';
 import 'package:mechanicfinder/src/models/mechanic.dart';
-import 'package:mechanicfinder/src/models/request.dart';
 import 'package:mechanicfinder/src/widgets/const.dart';
 import 'package:platform_maps_flutter/platform_maps_flutter.dart';
 
@@ -62,11 +61,12 @@ class _DetailPageState extends State<DetailPage> {
     getmechanic();
   }
 
-  String distance(mylatitude, mylongitude, otherlat, otherlong) {
+  double distance(mylatitude, mylongitude, otherlat, otherlong) {
     double distanceInMeters = Geolocator.distanceBetween(
         mylatitude, mylongitude, otherlat, otherlong);
-    print(distanceInMeters);
-    return (distanceInMeters / 1000).toStringAsFixed(2);
+    // print(distanceInMeters);
+
+    return (distanceInMeters / 1000);
     // final harvesine = new Haversine.fromDegrees(
     //     latitude1: mylatitude,
     //     longitude1: mylongitude,
@@ -75,6 +75,7 @@ class _DetailPageState extends State<DetailPage> {
     // return (harvesine.distance()/1000).toStringAsFixed(2);
   }
 
+  var alldist = [];
   Future getPosition() async {
     await Geolocator.getCurrentPosition().then((value) {
       setState(() {
@@ -82,6 +83,25 @@ class _DetailPageState extends State<DetailPage> {
         mylongitude = value.longitude;
       });
     });
+  }
+
+  getDistance() {
+    mechanics.forEach((element) {
+      setState(() {
+        num.add(distance(
+            mylatitude, mylongitude, element.latitude, element.longitude));
+      });
+    });
+  }
+
+  sortlist() {
+    final Map<double, MechanicModel> mappings = {
+      for (int i = 0; i < num.length; i++) num[i]: mechanics[i]
+    };
+    num.sort();
+    mechanics = [for (double n in num) mappings[n]];
+    print(mechanics[0]);
+    print(num);
   }
 
 //  Future _getLocation() async
@@ -94,12 +114,35 @@ class _DetailPageState extends State<DetailPage> {
 //         print("${first.featureName} : ${first.addressLine}");
 //       }
   List<MechanicModel> mechanics = [];
+  List<MechanicModel> filtermechanics = [];
+  List<double> num = [];
   getmechanic() async {
-    var list = await mechanic.getList();
+    // var filterlist = await mechanicService.filterMechaic('s');
+    var list = await mechanicService.getList();
+    // setState(() {
+    //   filtermechanics = filterlist;
+    // });
 
     setState(() {
       mechanics = list;
     });
+    filterList();
+  }
+
+  filterList() async {
+    List<Placemark> place=await getlocation();
+    mechanics.forEach((element) {
+      if (element.mechanicName.contains(place[0].name) ||
+          element.mechanicName.contains(place[0].locality) ||
+          element.city.contains('samakhushi') ||
+          element.address.contains('gongabu')) filtermechanics.add(element);
+    });
+  }
+
+  getlocation() async {
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(mylatitude, mylongitude);
+    return placemarks;
   }
 
   @override
@@ -165,6 +208,66 @@ class _DetailPageState extends State<DetailPage> {
                     fontWeight: FontWeight.bold),
               ),
             ),
+            SizedBox(height: 20),
+            Text('Recommended Service'),
+            SizedBox(height: 10),
+            Container(
+                height: 200,
+                //  color: Colors.green,
+                child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: filtermechanics.length,
+                    itemBuilder: (_, i) {
+                      if (filtermechanics.length != 0)
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                offset: Offset(0, 4),
+                                blurRadius: 30,
+                                color: kShadowColor,
+                              ),
+                            ],
+                          ),
+                          margin:
+                              EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          width: double.infinity,
+                          child: InkWell(
+                            onTap: () {
+                              Get.to(CustomMap(
+                                  mylatitude: mylatitude,
+                                  mylongitude: mylongitude,
+                                  mechanic: mechanics[i]));
+                              // Navigator.of(context)
+                              //     .push(MaterialPageRoute(builder: (_) {
+                              //   return ServiceRequestPage(mylatitude,mylongitude,mechanics[i].mechanicName);
+                              //}));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 10),
+                                  Text(
+                                    mechanics[i].mechanicName,
+                                    style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(mechanics[i].city),
+                                  Text(
+                                      "Distance : ${distance(mylatitude, mylongitude, mechanics[i].latitude, mechanics[i].longitude).toStringAsFixed(2)}km")
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                    })),
+            Text('All mechanic'),
             Container(
                 height: MediaQuery.of(context).size.height * .6,
                 child: mylatitude != null && mechanics.length != null
@@ -192,8 +295,7 @@ class _DetailPageState extends State<DetailPage> {
                                 Get.to(CustomMap(
                                     mylatitude: mylatitude,
                                     mylongitude: mylongitude,
-                                    latitude: mechanics[i].latitude,
-                                    longitude: mechanics[i].longitude));
+                                    mechanic: mechanics[i]));
                                 // Navigator.of(context)
                                 //     .push(MaterialPageRoute(builder: (_) {
                                 //   return ServiceRequestPage(mylatitude,mylongitude,mechanics[i].mechanicName);
@@ -214,7 +316,7 @@ class _DetailPageState extends State<DetailPage> {
                                     ),
                                     Text(mechanics[i].city),
                                     Text(
-                                        "Distance : ${distance(mylatitude, mylongitude, mechanics[i].latitude, mechanics[i].longitude)}km")
+                                        "Distance : ${distance(mylatitude, mylongitude, mechanics[i].latitude, mechanics[i].longitude).toStringAsFixed(2)}km")
                                   ],
                                 ),
                               ),
@@ -236,14 +338,12 @@ class CustomMap extends StatefulWidget {
     Key key,
     this.mylatitude,
     this.mylongitude,
-    this.latitude,
-    this.longitude,
+    this.mechanic,
   }) : super(key: key);
 
   final double mylatitude;
   final double mylongitude;
-  final double latitude;
-  final double longitude;
+  final MechanicModel mechanic;
 
   @override
   _CustomMapState createState() => _CustomMapState();
@@ -271,7 +371,7 @@ class _CustomMapState extends State<CustomMap> {
         polylineId: PolylineId(context.id),
         color: Colors.blueAccent,
         points: [
-          LatLng(widget.latitude, widget.longitude),
+          LatLng(widget.mechanic.latitude, widget.mechanic.longitude),
           LatLng(context.latitude, context.longitude)
         ]);
   }
@@ -297,7 +397,8 @@ class _CustomMapState extends State<CustomMap> {
                     color: Colors.blueAccent,
                     points: [
                       LatLng(widget.mylatitude, widget.mylongitude),
-                      LatLng(widget.latitude, widget.longitude)
+                      LatLng(
+                          widget.mechanic.latitude, widget.mechanic.longitude)
                     ])
               ]),
               markers: Set<Marker>.of(
@@ -311,12 +412,13 @@ class _CustomMapState extends State<CustomMap> {
                       snippet: "Hi I'm a Platform Marker",
                     ),
                     onTap: () {
-                      print("Marker tapped");
+                      // print("Marker tapped");
                     },
                   ),
                   Marker(
                     markerId: MarkerId('marker_1'),
-                    position: LatLng(widget.latitude, widget.longitude),
+                    position: LatLng(
+                        widget.mechanic.latitude, widget.mechanic.longitude),
                     consumeTapEvents: true,
                     infoWindow: InfoWindow(
                       title: 'PlatformMarker',
@@ -373,7 +475,10 @@ class _CustomMapState extends State<CustomMap> {
                               borderRadius: BorderRadius.circular(10),
                               side: BorderSide(color: Colors.red))),
                       onPressed: () {
-                        Get.to(ResuestService());
+                        Get.to(ResuestService(
+                            mylatitude: widget.mylatitude,
+                            mylongitude: widget.mylongitude,
+                            mechanic: widget.mechanic));
                       },
                       child: Text('Send Request'),
                     ),

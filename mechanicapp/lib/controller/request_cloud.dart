@@ -18,7 +18,7 @@ class FirebaseStorageData {
 
   Future<void> updateUser() {
     return request
-        .doc('ABC123')
+        .doc()
         .update({'info.address.location': GeoPoint(53.483959, -2.244644)})
         .then((value) => print("User Updated"))
         .catchError((error) => print("Failed to update user: $error"));
@@ -37,13 +37,10 @@ class FirebaseStorageData {
     return data.docs.map<Request>((da) => Request.fromJson(da.data())).toList();
   }
 
-  Future<void> update(Request req) {
-    return request
-        .doc()
-        .update({'status':req.status})
-        .then((value) => print("User Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
+  Future<void> update(String id, String status) {
+    return request.doc(id).update({'status': status}).catchError(
+        (error) => print("Failed to update user: $error"));
   }
- }
+}
 
 final request = FirebaseStorageData();

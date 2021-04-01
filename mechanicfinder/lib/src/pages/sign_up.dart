@@ -2,8 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:mechanicfinder/src/controller/auth.dart';
 import 'package:mechanicfinder/src/widgets/text_field.dart';
+
+import 'home.dart';
 
 class SignUp extends StatefulWidget {
   static Pattern pattern =
@@ -88,6 +91,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff3a3e3e),
       key: globalKey,
       body: SafeArea(
         child: Padding(
@@ -96,8 +100,15 @@ class _SignUpState extends State<SignUp> {
             key: _formKey,
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Center(
+                    child: CircleAvatar(
+                      radius: 70,
+                      backgroundImage: AssetImage("assets/serviceman.png"),
+                    ),
+                  ),
+                  SizedBox(height: 20),
                   Text(
                     'Sign Up',
                     style: TextStyle(
@@ -132,39 +143,44 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(height: 10),
                   loading
                       ? Row(children: [CircularProgressIndicator()])
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 14),
-                            button(
-                                color: Colors.red,
-                                buttonName: 'SignUp',
-                                ontap: () {
-                                  if (_formKey.currentState.validate()) {
-                                    validation();
-                                    sendData();
-                                    auth
-                                        .signup(email.text, password.text)
-                                        .then((v) {
-                                      globalKey.currentState
-                                          .showSnackBar(SnackBar(
-                                        content: Text(v.toString()),
-                                      ));
-                                    });
-                                  }
-                                  //validation();
-                                })
-                          ],
+                      : Container(
+                          width: double.infinity,
+                          child: button(
+                              color: Colors.red,
+                              buttonName: 'SignUp',
+                              ontap: () {
+                                if (_formKey.currentState.validate()) {
+                                  validation();
+
+                                  sendData();
+                                  auth
+                                      .signup(email.text, password.text)
+                                      .then((v) {
+                                    globalKey.currentState
+                                        .showSnackBar(SnackBar(
+                                      content: Text(v.toString()),
+                                    ));
+                                    if(auth.user.currentUser!=null)
+                                    Get.to(HomePage());
+                                  });
+                                }
+                                //validation();
+                              }),
                         ),
+                  SizedBox(
+                    height: 10,
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, 'login');
                     },
-                    child: Text(
-                      'Already have account\nSignup.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey,
+                    child: Center(
+                      child: Text(
+                        'Already have account\nSignup.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                   ),
@@ -178,16 +194,13 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget button({String buttonName, Color color, Function ontap}) {
-    return Container(
-      width: 100,
-      child: RaisedButton(
-        color: color,
-        onPressed: ontap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        child: Text(
-          buttonName,
-          style: TextStyle(fontSize: 20),
-        ),
+    return RaisedButton(
+      color: color,
+      onPressed: ontap,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Text(
+        buttonName,
+        style: TextStyle(fontSize: 20),
       ),
     );
   }

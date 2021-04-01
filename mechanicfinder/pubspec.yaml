@@ -31,6 +31,8 @@ dependencies:
   firebase_core: ^0.7.0
   firebase_storage: ^7.0.0
   fluttertoast: ^7.1.8
+
+  geocoding: any
   geolocator: ^6.2.0
   get: any
   google_sign_in: ^4.5.9

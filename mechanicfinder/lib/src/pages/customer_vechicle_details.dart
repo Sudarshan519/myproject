@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mechanicfinder/src/controller/request_mechanic_firebase.dart';
+import 'package:mechanicfinder/src/models/mechanic.dart';
+import 'package:mechanicfinder/src/models/request.dart';
+import 'package:platform_maps_flutter/platform_maps_flutter.dart';
 
 import 'const.dart';
 
 class CustomerDetails extends StatefulWidget {
+  final LatLng myposition;
+  final MechanicModel mechanic;
+
+  const CustomerDetails({Key key, this.myposition, this.mechanic}) : super(key: key);
   @override
   _CustomerDetailsState createState() => _CustomerDetailsState();
 }
@@ -88,6 +96,15 @@ class _CustomerDetailsState extends State<CustomerDetails> {
             child: RaisedButton(
               color: Colors.white,
               onPressed: () {
+                  Request req = Request(
+                           DateTime.now().microsecondsSinceEpoch.toString(),
+                            'repair',
+                            DateTime.now().toString(),
+                            widget.myposition.latitude.toString(),
+                            widget.myposition.longitude.toString(),
+                            'sending',
+                            widget.mechanic.mechanicName);
+                        requestService.addRequest(req);
                 Get.snackbar('Uploading data', 'Connecting to database',
                     snackPosition: SnackPosition.BOTTOM);
               },

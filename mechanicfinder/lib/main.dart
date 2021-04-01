@@ -72,9 +72,9 @@ class _MyAppState extends State<MyApp> {
         home:
             //Payment(),
             auth.user.currentUser != null
-                ? HomePage(currentUser: auth.user.currentUser)
+                ? HomePage()
                 : showlogin
-                    ? LoginScreen()
+                    ? WelcomePage()
                     : WelcomePage(),
         debugShowCheckedModeBanner: false,
         routes: {
@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
           //'requestservice': (_) => RequestServicePage(),
           'trackrequest': (_) => TrackRequestpage(),
           'home': (_) => HomePage(
-                currentUser: auth.user.currentUser,
+                
               ),
               'myvechicle': (_) => MyVechicle(),
           'payment': (_) => Payment()

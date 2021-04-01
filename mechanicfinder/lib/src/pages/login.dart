@@ -8,7 +8,6 @@ import 'package:mechanicfinder/src/widgets/text_field.dart';
 
 import 'home.dart';
 
-
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key, this.title}) : super(key: key);
 
@@ -93,29 +92,54 @@ class LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Color(0xff3a3e3e),
       key: _scaffoldKey,
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              // Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white)),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //       onPressed: () {
+      //       },
+      //       icon: Icon(Icons.arrow_back_ios, color: Colors.white)),
+      //   centerTitle: true,
+      // ),
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 50),
+        alignment: Alignment.center,
+        margin: EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: InkWell(
+                    onTap: () {
+                      Get.to(HomePage());
+                    },
+                    child: Text(
+                      'X',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: CircleAvatar(
+                    radius: 70,
+                    backgroundImage: AssetImage("assets/serviceman.png"),
+                  ),
+                ),
+                SizedBox(height: 20),
                 Text(
                   'LogIn',
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 Column(
                   children: [
@@ -132,11 +156,17 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
-                  // color: Colors.red,
+                  width: double.infinity,
                   child: RaisedButton(
+                    
+                    color: Colors.green,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
+
+                        borderRadius: BorderRadius.circular(10)),
                     onPressed: () {
                       if (_formKey.currentState.validate()) validation();
                     },
@@ -190,12 +220,14 @@ class LoginScreenState extends State<LoginScreen> {
                       RaisedButton(
                           color: Colors.green,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
+                              borderRadius: BorderRadius.circular(10.0),
                               side: BorderSide(color: Colors.green)),
                           onPressed: () {
                             try {
-                              auth.signInWithGoogle().whenComplete(() =>   Navigator.pushNamed(context, 'home'));
-                            
+                              auth.signInWithGoogle();
+
+                              if (auth.user.currentUser != null)
+                                Get.to(HomePage());
                             } catch (e) {
                               _scaffoldKey.currentState.showSnackBar(
                                   SnackBar(content: Text(e.message)));
@@ -222,9 +254,7 @@ class LoginScreenState extends State<LoginScreen> {
       if (auth.user != null) {
         _showSnackBar('Welcome  ${auth.user.currentUser.displayName}');
 
-        Get.to(HomePage(
-          currentUser: auth.user.currentUser,
-        ));
+        Get.to(HomePage());
       } else
         print('error signing in');
     } on PlatformException catch (e) {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mechanicapp/pages/homepage/home.dart';
-import 'package:mechanicapp/pages/profile/profile.dart';
-import 'package:mechanicapp/pages/requestpage/request_page.dart';
 
+import 'home.dart';
+import 'profile.dart';
+import 'request_page.dart';
 class BottomNav extends StatefulWidget {
   @override
   _BottomNavState createState() => _BottomNavState();
@@ -43,7 +43,7 @@ class _BottomNavState extends State<BottomNav> {
           ? HomePage()
           : index == 1
               ? RequestPage()
-              : Profile(context),
+              : Profile(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
         backgroundColor: Colors.grey[200],
