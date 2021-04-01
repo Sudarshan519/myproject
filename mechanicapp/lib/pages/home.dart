@@ -1,11 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mechanicapp/controller/auth.dart';
 import 'package:mechanicapp/controller/request_cloud.dart';
 import 'package:mechanicapp/models/request.dart';
-import 'package:mechanicapp/pages/homepage/charts.dart';
-import 'package:mechanicapp/pages/widgets/constant.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import '../models/services.dart';
+import 'profile.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,13 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 bool value = false;
-List myservices = [
-  'add service',
-  'Flat tyre',
-  'Puncture',
-  'Engine',
-  'JumpStart'
-];
 
 class _HomePageState extends State<HomePage> {
   List<Request> requests;
@@ -135,75 +130,70 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buldDrawer() {
+    return Drawer(
+      child: SafeArea(
+        child: Container(
+          //color: Color(0xff2b2b2b),
+          child: ListView(
+            children: [
+              UserAccountsDrawerHeader(
+                decoration: BoxDecoration(
+                    // image: DecorationImage(
+                    //     image: AssetImage('image/backgrouond.img'),
+                    //     fit: BoxFit.cover),
+                    ),
+                currentAccountPicture: CircleAvatar(
+                  backgroundImage: AssetImage('assets/umbrella.png'),
+                ),
+                accountName: null,
+                accountEmail: Text(
+                  's@gmail.com',
+                  style: TextStyle(color: Colors.blueGrey),
+                ),
+              ),
+              drawerItem(
+                  name: 'Request History', icon: Icons.menu_open_rounded),
+              drawerItem(
+                  name: 'Profile',
+                  icon: Icons.person,
+                  onpress: () {
+                    Get.to(Profile());
+                  }),
+              // drawerItem(name: 'Category ', icon: Icons.car_repair),
+              // drawerItem(     name: 'Manage Requests', icon: Icons.sort_by_alpha_rounded),
+              drawerItem(name: 'Update location', icon: Icons.location_city),
+              drawerItem(name: 'Update details', icon: Icons.details),
+              drawerItem(name: 'Add Service', icon: Icons.settings),
+              drawerItem(name: 'Feedbacks', icon: Icons.help_center),
+              Divider(thickness: 2, color: Colors.white),
+              ListTile(
+                title: Text(
+                  'Communicate',
+                  style: TextStyle(color: Colors.grey, fontSize: 20),
+                ),
+              ),
+              //  drawerItem(name: 'Change', icon: Icons.lock),
+              drawerItem(
+                  name: 'Log Out',
+                  icon: Icons.logout,
+                  onpress: () {
+                    auth.signout();
+                    Navigator.pushNamed(context, 'login');
+                  }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey[300],
-      drawer: Drawer(
-        child: SafeArea(
-          child: Container(
-            //color: Color(0xff2b2b2b),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(
-                      // image: DecorationImage(
-                      //     image: AssetImage('image/backgrouond.img'),
-                      //     fit: BoxFit.cover),
-                      ),
-                  currentAccountPicture: CircleAvatar(
-                    backgroundImage: AssetImage('assets/umbrella.png'),
-                  ),
-                  accountName: Text(auth.user.currentUser.displayName),
-                  accountEmail: Text(
-                    auth.user.currentUser.email,
-                    style: TextStyle(color: Colors.blueGrey),
-                  ),
-                ),
-                drawerItem(
-                    name: 'Request History', icon: Icons.menu_open_rounded),
-                drawerItem(name: 'Profile', icon: Icons.person),
-                drawerItem(name: 'Category ', icon: Icons.car_repair),
-                drawerItem(
-                    name: 'Manage Requests', icon: Icons.sort_by_alpha_rounded),
-                drawerItem(name: 'Earnings History', icon: Icons.money),
-                drawerItem(name: 'Requests Statistics', icon: Icons.person_add),
-                drawerItem(name: 'Shop Settings', icon: Icons.settings),
-                drawerItem(name: 'Support', icon: Icons.help_center),
-                Divider(thickness: 2, color: Colors.white),
-                ListTile(
-                  title: Text(
-                    'Communicate',
-                    style: TextStyle(color: Colors.grey, fontSize: 20),
-                  ),
-                ),
-                drawerItem(name: 'Change', icon: Icons.lock),
-                drawerItem(
-                    name: 'Log Out',
-                    icon: Icons.logout,
-                    onpress: () {
-                      auth.signout();
-                      Navigator.pushNamed(context, 'login');
-                    }),
-              ],
-            ),
-          ),
-        ),
-      ),
-      // appBar: new AppBar(
-      //   title: new Text(
-      //     'MECHANIC APP',
-      //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      //   ),
-      //   centerTitle: true,
-      // ),
-      // body: Stack(children: [
-      //   Container(alignment: Alignment.topRight,
-      //   child: CircleAvatar(radius: 30,child: Icon(Icons.notification_important_rounded)),)
-      // ],),
+      drawer: _buldDrawer(),
       body: ListView(
         children: [
           Container(
@@ -420,9 +410,9 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Acceptin requests',
+              Text('Accepting requests',
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: Colors.black,
                     fontSize: 20,
                   )),
               CupertinoSwitch(
@@ -443,15 +433,14 @@ class OurServices extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
+          color: Colors.transparent,
           boxShadow: [
             BoxShadow(
               offset: Offset(0, 4),
               blurRadius: 30,
-              color: kShadowColor,
+              color: Colors.grey,
             ),
           ],
         ),
@@ -460,7 +449,7 @@ class OurServices extends StatelessWidget {
           children: [
             Text(
               "My Services",
-              style: kTitleTextstyle,
+              style: TextStyle(),
             ),
             SizedBox(
               height: 10,
@@ -471,22 +460,13 @@ class OurServices extends StatelessWidget {
                     itemCount: myservices.length,
                     scrollDirection: Axis.horizontal,
                     physics: BouncingScrollPhysics(),
-                    //  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    //   crossAxisCount: 4),
-                    // itemCount: servicesname.length,
                     itemBuilder: (_, i) {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           InkWell(
-                            onTap: () {
-                              // Navigator.of(context)
-                              //     .push(MaterialPageRoute(builder: (_) {
-                              //   return DetailPage(
-                              //       context, servicesname[i], imagesrc[i]);
-                              // }));
-                            },
+                            onTap: () {},
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
@@ -498,7 +478,7 @@ class OurServices extends StatelessWidget {
                                     BoxShadow(
                                       offset: Offset(0, 4),
                                       blurRadius: 30,
-                                      color: kShadowColor,
+                                      color: Colors.grey,
                                     ),
                                   ],
                                 ),
@@ -506,14 +486,23 @@ class OurServices extends StatelessWidget {
                                 height: 100,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Icon(Icons.add),
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        "http://via.placeholder.com/350x150",
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  ), //Image.network(myservices[i].image)
                                   //   child: Image.asset('imagesrc[i]'),
                                 ),
                               ),
                             ),
                           ),
                           Text(
-                            myservices[i],
+                            myservices[i].name,
                             style: TextStyle(
                                 color: Colors.grey[700],
                                 fontSize: 14,
@@ -522,15 +511,6 @@ class OurServices extends StatelessWidget {
                         ],
                       );
                     })),
-            // Center(
-            //   child: RaisedButton(
-            //       color: Colors.green[300],
-            //       onPressed: () {},
-            //       child: Text(
-            //         'View more',
-            //         style: kSubTextStyle,
-            //       )),
-            // )
           ],
         ),
       ),

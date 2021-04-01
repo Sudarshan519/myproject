@@ -13,15 +13,16 @@ class RequestServices {
     print('request sent');
   }
 
-  updateBook(Request request) async {
+  updateRequest(Request request) async {
   //  print(request.requestid);
     await firestore
         .collection("Request")
         .doc(request.userid)
         .update(request.toJson());
   }
+  
 
-  delBook(request) async {
+  delRequest(request) async {
     var ref = firestore.collection("Request").doc(request.id);
 
     await ref.delete();

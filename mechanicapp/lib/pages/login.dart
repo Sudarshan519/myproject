@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mechanicapp/controller/auth.dart';
-import 'package:mechanicapp/pages/widgets/textfield.dart';
+import 'package:mechanicapp/pages/widgets/mytextfield.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -31,20 +31,7 @@ class _SignInPageState extends State<SignInPage> {
                       child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                // Flexible(
-                //   flex: 1,
-                //   child: InkWell(
-                //     child: Container(
-                //       child: Align(
-                //         alignment: Alignment.topLeft,
-                //         child: Icon(Icons.close),
-                //       ),
-                //     ),
-                //     onTap: () {
-                //       Navigator.pop(context);
-                //     },
-                //   ),
-                // ),
+        
                 Flexible(
                   flex: 8,
                   child: Column(
@@ -74,7 +61,7 @@ class _SignInPageState extends State<SignInPage> {
                           obscureText: true,
                           controller: null,
                           icon: Icons.lock_outline,
-                          suffixicon: Icons.lock_outline),
+                          suffixIcon: Icons.lock_outline),
                       SizedBox(
                         height: 15,
                       ),

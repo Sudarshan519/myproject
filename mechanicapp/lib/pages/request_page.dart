@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mechanicapp/controller/request_cloud.dart';
 import 'package:mechanicapp/models/request.dart';
-import 'package:mechanicapp/pages/widgets/constant.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RequestPage extends StatefulWidget {
@@ -11,7 +10,7 @@ class RequestPage extends StatefulWidget {
 }
 
 class _RequestPageState extends State<RequestPage> {
- Stream allRequestStream = FirebaseFirestore.instance
+  Stream allRequestStream = FirebaseFirestore.instance
       .collection('requests')
       .where('status', isEqualTo: 'sending')
       .snapshots();
@@ -19,7 +18,7 @@ class _RequestPageState extends State<RequestPage> {
       .collection('requests')
       .where('status', isEqualTo: 'changed')
       .snapshots();
-      Stream completedRequestStream = FirebaseFirestore.instance
+  Stream completedRequestStream = FirebaseFirestore.instance
       .collection('requests')
       .where('status', isEqualTo: 'completed')
       .snapshots();
@@ -55,12 +54,12 @@ class _RequestPageState extends State<RequestPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: AllRequests(allRequestStream),
               )),
-             Container(
+              Container(
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: AllRequests(acceptedRequestStream),
               )),
-               Container(
+              Container(
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: AllRequests(completedRequestStream),
@@ -73,9 +72,7 @@ class _RequestPageState extends State<RequestPage> {
 
 class AllRequests extends StatefulWidget {
   final Stream sRequestStream;
-  AllRequests( this.sRequestStream);
-
-  
+  AllRequests(this.sRequestStream);
 
   @override
   _AllRequestsState createState() => _AllRequestsState();
@@ -153,18 +150,18 @@ class _AllRequestsState extends State<AllRequests> {
                           SizedBox(
                             width: 10,
                           ),
-                          Column(
+                        Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 doc[i]['datetime'],
-                                style: kTitleTextstyle.copyWith(
+                                style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w600),
                               ),
                               Text(
                                 doc[i]['service'],
-                                style: kTitleTextstyle.copyWith(
+                                style: TextStyle(
                                     color: Colors.grey[600],
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16),
@@ -174,7 +171,7 @@ class _AllRequestsState extends State<AllRequests> {
                               ),
                               Container(
                                 height: 30,
-                                child: Row(
+                                child: doc[i].data()['status']!='completed'?  Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
@@ -192,18 +189,28 @@ class _AllRequestsState extends State<AllRequests> {
                                           //                       '44',
                                           //                       'sending',
                                           //                       'selksefk');
+
                                           snapshot.data.docs[i].reference
                                               .update({
                                             'status': 'changed'
                                           }).whenComplete(
                                                   () => print('completed'));
                                         },
-                                        label:doc[i]['status']=='changed'?Text('CompleteIt'): Text('Confirm',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w600))),
-                                    SizedBox(width: 10),
+                                        label: doc[i]['status'] == 'changed'
+                                            ? InkWell(
+                                                onTap: () {
+                                                  request.update(snapshot.data.docs[i].id, 'completed');
+                                                  print(
+                                                      snapshot.data.docs[i].id);
+                                                },
+                                                child: Text('Iscompleted'))
+                                            : Text('Confirm',
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.w600))),
+                                    SizedBox(width: 4),
                                     InputChip(
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -218,7 +225,7 @@ class _AllRequestsState extends State<AllRequests> {
                                                 fontSize: 16,
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w600))),
-                                    SizedBox(width: 10),
+                                    SizedBox(width: 4),
                                     InputChip(
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -233,7 +240,7 @@ class _AllRequestsState extends State<AllRequests> {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w600))),
                                   ],
-                                ),
+                                ):Text(''),
                               )
                             ],
                           )

@@ -88,12 +88,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mechanicfinder/src/models/mechanic.dart';
+import 'package:platform_maps_flutter/platform_maps_flutter.dart';
 
 import 'const.dart';
 import 'customer_vechicle_details.dart';
 
 class ResuestService extends StatefulWidget {
-  @override
+  final double mylatitude;
+  final double mylongitude;
+  final MechanicModel mechanic;
+  
+
+  const ResuestService(  {Key key, this.mylatitude, this.mylongitude,this.mechanic}) : super(key: key);@override
   _ResuestServiceState createState() => _ResuestServiceState();
 }
 
@@ -174,7 +181,7 @@ class _ResuestServiceState extends State<ResuestService> {
                 child: RaisedButton(
                   color: Colors.green,
                   onPressed: () {
-                    Get.to(CustomerDetails());
+                    Get.to(CustomerDetails(myposition:LatLng(widget.mylatitude,widget.mylongitude),mechanic :widget.mechanic));
                   },
                   child: Row(
                     children: [

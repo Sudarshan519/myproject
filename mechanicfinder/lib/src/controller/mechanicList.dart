@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mechanicfinder/src/models/mechanic.dart';
 
 class MechanicFirebase {
-  CollectionReference mechanic = FirebaseFirestore.instance.collection('mechaniclist');
+  CollectionReference mechanic =
+      FirebaseFirestore.instance.collection('mechaniclist');
   addUser(MechanicModel mech) {
     return mechanic
         .add(mech.toJson())
@@ -27,14 +28,23 @@ class MechanicFirebase {
   // getUser(){
 
   // }
-    Future<List<MechanicModel>> getList() async {
+  Future<List<MechanicModel>> getList() async {
     var data = await mechanic.get();
 
-    return data.docs.map<MechanicModel>((da) => MechanicModel.fromJson(da.data())).toList();
+    return data.docs
+        .map<MechanicModel>((da) => MechanicModel.fromJson(da.data()))
+        .toList();
   }
 
-  
+  // filterMechaic(String city) async {
+  //   var data = await mechanic.where('mechanicName', arrayContains:'ranibari').get();
+  //   data.docs.forEach((element) {print(element.data()['name']);});
+  //   return data.docs
+  //       .map<MechanicModel>((da) => MechanicModel.fromJson(da.data()))
+  //       .toList();
+  // }
+
   deleteUser() {}
 }
 
-final MechanicFirebase mechanic=MechanicFirebase();
+final MechanicFirebase mechanicService = MechanicFirebase();

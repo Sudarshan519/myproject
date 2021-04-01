@@ -1,12 +1,16 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mechanicfinder/src/controller/auth.dart';
 import 'package:mechanicfinder/src/pages/service_detail.dart';
 import 'package:mechanicfinder/src/widgets/carousel_sliderdemo.dart';
 import 'package:mechanicfinder/src/widgets/const.dart';
 
 import 'login.dart';
+import 'profile.dart';
 import 'settings.dart';
 
 final List<String> servicesname = [
@@ -38,23 +42,29 @@ final List<String> imagesrc = [
   "assets/oilservice.jpg",
 ];
 
+double distance(
+  double lat1,
+  double lon1,
+  double lat2,
+  double lon2,
+) {
+//ts equatorial region is spherical and poles are flat. The total mass of the earth is 5.972 × 1024kg. Its diameter is 12,742 km and the equatorial radius is 6,371 km.
+
+  var EarthRadius = 637137.0; // WGS84 major axis
+  double distance = 2 *
+      EarthRadius *
+      asin(sqrt(pow(sin(lat2 - lat1) / 2, 2) +
+          cos(lat1) * cos(lat2) * pow(sin(lon2 - lon1) / 2, 2)));
+
+  return distance;
+}
+
 class HomePage extends StatefulWidget {
-  final User currentUser;
-
-  HomePage({Key key, @required this.currentUser}) : super(key: key);
-
   @override
-  State createState() => HomePageState(currentUser: currentUser);
+  State createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-  HomePageState({Key key, @required this.currentUser});
-
-  final User currentUser;
-  // final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
-  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-  // final GoogleSignIn googleSignIn = GoogleSignIn();
-
   bool isLoading = false;
   List<Choice> choices = const <Choice>[
     const Choice(title: 'Settings', icon: Icons.settings),
@@ -223,17 +233,29 @@ class HomePageState extends State<HomePage> {
                       //     fit: BoxFit.cover),
                       ),
                   currentAccountPicture: CircleAvatar(
-                    backgroundImage: currentUser.photoURL != null
-                        ? NetworkImage(auth.user.currentUser.photoURL)
-                        : AssetImage('assets/serviceman.png'),
+                    backgroundImage: //currentUser.photoURL != null
+                        // ? NetworkImage(auth.user.currentUser.photoURL)
+                        //:
+                        AssetImage('assets/serviceman.png'),
                   ),
-                  accountName: auth.user.currentUser.displayName != null
-                      ? Text(auth.user.currentUser.displayName)
-                      : Text(''),
-                  accountEmail: Text(auth.user.currentUser.email),
+                  accountName: // auth.user.currentUser.displayName != null
+                      //? Text(auth.user.currentUser.displayName)
+
+                      Text(''),
+                  accountEmail: auth.user.currentUser != null
+                      ? Text(auth.user.currentUser.email ?? '')
+                      : InkWell(
+                          onTap: () {
+                            Get.to(LoginScreen());
+                          },
+                          child: Text('Sign in to continue')),
                 ),
                 drawerItem(
-                    name: 'Request History', icon: Icons.menu_open_rounded),
+                    name: 'Request History',
+                    icon: Icons.menu_open_rounded,
+                    ontap:() {
+                      Get.to(Profile());
+                    }),
                 drawerItem(
                     name: 'TrackRequest',
                     icon: Icons.navigation,
@@ -393,49 +415,45 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget buildItem(BuildContext context, DocumentSnapshot document) {
-    if (document['id'] == currentUser.uid) {
-      return Container();
-    } else {
-      return Container(
-        child: FlatButton(
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Text(
-                          'Nickname: ${document['name']}',
-                          style: TextStyle(color: primaryColor),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
+    return Container(
+      child: FlatButton(
+        child: Row(
+          children: <Widget>[
+            Flexible(
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        'Nickname: ${document['name']}',
+                        style: TextStyle(color: primaryColor),
                       ),
-                      Container(
-                        child: Text(
-                          'Nickname: ${document['email']}',
-                          style: TextStyle(color: primaryColor),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
+                    ),
+                    Container(
+                      child: Text(
+                        'Nickname: ${document['email']}',
+                        style: TextStyle(color: primaryColor),
                       ),
-                    ],
-                  ),
-                  margin: EdgeInsets.only(left: 20.0),
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
+                    ),
+                  ],
                 ),
+                margin: EdgeInsets.only(left: 20.0),
               ),
-            ],
-          ),
-          onPressed: () {},
-          color: greyColor2,
-          padding: EdgeInsets.fromLTRB(25.0, 10.0, 25.0, 10.0),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            ),
+          ],
         ),
-        margin: EdgeInsets.only(bottom: 10.0, left: 5.0, right: 5.0),
-      );
-    }
+        onPressed: () {},
+        color: greyColor2,
+        padding: EdgeInsets.fromLTRB(25.0, 10.0, 25.0, 10.0),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      ),
+      margin: EdgeInsets.only(bottom: 10.0, left: 5.0, right: 5.0),
+    );
   }
 }
 
@@ -471,8 +489,6 @@ class NewService extends StatelessWidget {
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     physics: BouncingScrollPhysics(),
-                    //  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    //   crossAxisCount: 4),
                     itemCount: servicesname.length,
                     itemBuilder: (_, i) {
                       return Column(

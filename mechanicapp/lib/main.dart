@@ -2,11 +2,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:mechanicapp/controller/auth.dart';
-import 'package:mechanicapp/pages/homepage/home.dart';
 import 'package:mechanicapp/pages/login.dart';
-import 'package:mechanicapp/pages/requestpage/request_page.dart';
 import 'package:mechanicapp/pages/signup.dart';
+
+import 'pages/home.dart';
+import 'pages/request_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +23,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
       home: 
       auth.user.currentUser!=null?
-      HomePage():SignInPage(),
+      HomePage():HomePage(),
       routes: {
     'login': (_) => SignInPage(),
           'signup': (_) => SignUpPage(),
